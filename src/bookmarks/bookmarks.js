@@ -8,3 +8,5 @@ router.route('/bookmarks')
   .get((req, res) => {
     res.json(store);
   });
+
+module.exports = router;
