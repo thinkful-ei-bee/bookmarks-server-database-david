@@ -1,1 +1,3 @@
 {"message":"no bookmark found with id dskok","level":"error"}
+{"message":"missing bookmark url in post request","level":"error"}
+{"message":"invalid url","level":"error"}

@@ -7,9 +7,12 @@ const cors = require('cors');
 const { NODE_ENV } = require('./config');
 const logger = require('./logger');
 const validate = require('./authorize');
+
+const app = express();
+
 const bookmarksRouter = require('./bookmarks/bookmarks');
 const bookmarksIdRouter = require('./bookmarksId/bookmarksId');
-const app = express();
+const bookmarksPostRouter = require('./bookmarkPost/bookmarkPost');
 
 const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'common';
 
@@ -20,6 +23,7 @@ app.use(validate);
 
 app.use(bookmarksRouter);
 app.use(bookmarksIdRouter);
+app.use(bookmarksPostRouter);
 
 app.get('/', (req, res) => {
   res.send('Hello, world!');

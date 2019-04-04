@@ -12,9 +12,22 @@ router.route('/bookmarks/:id')
    
     if (!bookmark) {
       logger.error(`no bookmark found with id ${id}`);
-      return res.status(401).send('not found');
+      return res.status(404).send('not found');
     }    
     res.status(200).json(bookmark);
+  })
+  .delete((req, res) => {
+    const { id } = req.params;
+    const bookmark = store.find(item => item.id === id);
+   
+    if (!bookmark) {
+      logger.error(`no bookmark found with id ${id}`);
+      return res.status(404).send('not found');
+    }
+
+    const index = store.indexOf(bookmark);
+    store.splice(index, 1);
+    res.status(204).end();
   });
 
 module.exports = router;
