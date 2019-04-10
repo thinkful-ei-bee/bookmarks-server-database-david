@@ -2,7 +2,6 @@
 
 const express = require('express');
 const router = express.Router();
-const store = require('../store');
 const bookmarkService = require('./bookmarkService');
 
 router.route('/bookmarks')

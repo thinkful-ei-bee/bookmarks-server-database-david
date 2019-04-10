@@ -3,57 +3,32 @@
 const express = require('express');
 const router = express.Router();
 const logger = require('../logger');
-const store = require('../store');
+const bookmarkService = require('../bookmarks/bookmarkService');
 const bodyParser = express.json();
-const uuid = require('uuid/v4');
 
 router.route('/bookmark')
-  .post(bodyParser, (req, res) => {
-    const {title, url, desc, rating} = req.body;
-
-    if (!title) {
-      logger.error('missing bookmark title in post request');
-      return res.status(400).send('title required');
-    }
-
-    if (!url) {
-      logger.error('missing bookmark url in post request');
-      return res.status(400).send('url required');
-    }
-
+  .post(bodyParser, (req, res, next) => {
+    const {title, url, description, rating} = req.body;
+    const newBookmark = { title, url, description, rating };
+    const knex = req.app.get('db');
+    
     if (url.length < 5 || (url.slice(0, 5) !== 'http:' && url.slice(0, 5) !== 'https')) {
       logger.error('invalid url');
       return res.status(400).send('url required with http or https protocol');
     } 
 
-    if (rating) {
-      const number = parseInt(rating);
-
-      if (!number) {
-        logger.error('invalid rating');
-        return res.status(400).send('rating should be a number');
-      }
-
-      if (number < 1 || number > 5) {
-        logger.error('invalid rating');
-        return res.status(400).send('rating should be an integer between 1 and 5');
-      }
+    if (rating < 1 || rating > 5) {
+      logger.error('invalid rating');
+      return res.status(400).send('rating should be from 1 to 5');
     }
-
-    const newId = uuid();
-    
-    const newItem = {
-      id: newId,
-      title,
-      url,
-      desc,
-      rating
-    };
-
-    store.push(newItem);
-    res.status(201).json({
-      id: newId
-    });
+    bookmarkService.insertMark(knex, newBookmark)
+      .then(item => {
+        res.status(201).json({
+          id: item.id
+        });
+      })
+      .catch(next);
   });
+  
 
 module.exports = router;

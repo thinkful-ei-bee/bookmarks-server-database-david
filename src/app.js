@@ -8,8 +8,6 @@ const { NODE_ENV } = require('./config');
 const logger = require('./logger');
 const validate = require('./authorize');
 
-const bookmarkService = require('./bookmarks/bookmarkService');
-
 const app = express();
 
 const bookmarksRouter = require('./bookmarks/bookmarks');
@@ -24,16 +22,6 @@ app.use(cors());
 app.use(validate);
 
 app.use(bookmarksRouter);
-// app.get('/bookmarks', (req, res, next) => {
-//   const knex = req.app.get('db');
-//   bookmarkService.getAllBookmarks(knex)
-//     .then(articles => {
-//       res.json(articles);
-//     })
-//     .catch(next);
-// });
-
-
 app.use(bookmarksIdRouter);
 app.use(bookmarksPostRouter);
 

@@ -3,12 +3,13 @@
 const express = require('express');
 const router = express.Router();
 const logger = require('../logger');
-const store = require('../store');
+const bookmarkService = require('../bookmarks/bookmarkService');
 
 router.route('/bookmarks/:id')
   .get((req, res) => {
+    const knex = req.app.get('db');
     const { id } = req.params;
-    const bookmark = store.find(item => item.id === id);
+    const bookmark = bookmarkService.getById(knex, id); 
    
     if (!bookmark) {
       logger.error(`no bookmark found with id ${id}`);
@@ -16,18 +17,22 @@ router.route('/bookmarks/:id')
     }    
     res.status(200).json(bookmark);
   })
-  .delete((req, res) => {
+  .delete((req, res, next) => {
+    const knex = req.app.get('db');
     const { id } = req.params;
-    const bookmark = store.find(item => item.id === id);
+    const bookmark = bookmarkService.getById(knex, id);
    
     if (!bookmark) {
       logger.error(`no bookmark found with id ${id}`);
       return res.status(404).send('not found');
     }
 
-    const index = store.indexOf(bookmark);
-    store.splice(index, 1);
-    res.status(204).end();
+    bookmarkService.deleteMark(knex, id)
+      .then (() => {
+        res.status(204).end();
+      })
+      .catch(next);
   });
+  
 
 module.exports = router;
