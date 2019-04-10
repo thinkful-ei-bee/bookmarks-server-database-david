@@ -24,14 +24,20 @@ app.use(cors());
 app.use(validate);
 
 app.use(bookmarksRouter);
+// app.get('/bookmarks', (req, res, next) => {
+//   const knex = req.app.get('db');
+//   bookmarkService.getAllBookmarks(knex)
+//     .then(articles => {
+//       res.json(articles);
+//     })
+//     .catch(next);
+// });
+
+
 app.use(bookmarksIdRouter);
 app.use(bookmarksPostRouter);
 
-app.get('/articles', (req, res) => {
-  const knex = req.app.get('db');
-  bookmarkService.getAllBookmarks(knex).then(bookmarks => 
-    res.json(bookmarks));
-});
+
 
 // eslint-disable-next-line no-unused-vars
 app.use(function errorHandler(error, req, res, next) {
