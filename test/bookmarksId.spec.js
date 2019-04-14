@@ -8,6 +8,12 @@ const auth = {
   'Content-Type': 'application/json'
 };
 let db;
+const fakeMark = {
+  title: 'fake website',
+  url: 'http://www.fakesite.com',
+  description: 'a fake website',
+  rating: 3
+};
 
 describe('Route /api/bookmarks/:id', () => {
 
@@ -19,22 +25,15 @@ describe('Route /api/bookmarks/:id', () => {
     app.set('db', db);
   });
 
+  beforeEach('clear data', () => {
+    return db('bookmarks').truncate(); 
+  });
+
+  beforeEach('set bookmark', () => {
+    return db.into('bookmarks').insert(fakeMark);
+  });
+
   after('disconnect from db', () => db.destroy());
-
-  beforeEach('create test bookmark', () => {
-    db('bookmarks').insert({
-      title: 'fake website',
-      url: 'http://www.fakesite.com',
-      description: 'a fake website',
-      rating: 3
-    });
-  });
-
-  afterEach('remove test bookmark', () => {
-    db('bookmarks').where({
-      title: 'fake website'
-    }).del();
-  });
 
   it('GET /api/bookmarks/:id without authorization responds with 401', () => {
     return supertest(app)
@@ -49,13 +48,46 @@ describe('Route /api/bookmarks/:id', () => {
       .expect(400);
   });
 
+  it('GET /api/bookmarks returns 200 and our test bookmark', () => {
+    fakeMark.id = 1;
+    return supertest(app)
+      .get('/api/bookmarks')
+      .set(auth)
+      .expect(200, [fakeMark]);
+  });
+
   it('PATCH responds with 204 and no content when successful', () => {
     return supertest(app)
-      .patch('/api/bookmarks/10000')
+      .patch('/api/bookmarks/1')
       .set(auth)
       .send({
         description: 'a faker website'
       })
       .expect(204);
+  });
+
+  it('PATCH updates a bookmark with partial data', () => {
+    fakeMark.description = 'a faker website';
+    return supertest(app)
+      .patch('/api/bookmarks/1')
+      .set(auth)
+      .send({
+        description: 'a faker website'
+      })
+      .expect(204)
+      .then(() => {
+        return supertest(app)
+          .get('/api/bookmarks')
+          .set(auth)
+          .expect(200, [fakeMark]);
+      });  
+  });
+
+  it('PATCH responds with 400 if no fields provided', () => {
+    return supertest(app)
+      .patch('/api/bookmarks/1')
+      .set(auth)
+      .send({})
+      .expect(400);
   });
 });
