@@ -9,15 +9,16 @@ const bookmarkService = require('../bookmarks/bookmarkService');
 router.route('/api/bookmarks/:id')
   .get((req, res, next) => {
     const knex = req.app.get('db');
-    const { id } = req.params;
-    const bookmark = bookmarkService.getById(knex, id); 
-   
-    if (!bookmark) {
-      logger.error(`no bookmark found with id ${id}`);
-      return res.status(404).send('not found');
-    }    
-    res.status(200).json(bookmark)
-      .catch(next);
+    const id = req.params.id;
+    bookmarkService.getById(knex, id)
+      .then(bookmark => {
+        if (!bookmark) {
+          logger.error(`no bookmark found with id ${id}`);
+          return res.status(404).send('not found');
+        }    
+        res.status(200).json(bookmark)
+          .catch(next);
+      });
   })
   .delete((req, res, next) => {
     const knex = req.app.get('db');
