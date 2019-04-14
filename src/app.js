@@ -12,7 +12,6 @@ const app = express();
 
 const bookmarksRouter = require('./bookmarks/bookmarks');
 const bookmarksIdRouter = require('./bookmarksId/bookmarksId');
-const bookmarksPostRouter = require('./bookmarkPost/bookmarkPost');
 
 const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'common';
 
@@ -23,9 +22,6 @@ app.use(validate);
 
 app.use(bookmarksRouter);
 app.use(bookmarksIdRouter);
-app.use(bookmarksPostRouter);
-
-
 
 // eslint-disable-next-line no-unused-vars
 app.use(function errorHandler(error, req, res, next) {
