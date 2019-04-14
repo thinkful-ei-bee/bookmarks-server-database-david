@@ -6,7 +6,7 @@ const bodyParser = express.json();
 const logger = require('../logger');
 const bookmarkService = require('./bookmarkService');
 
-router.route('/bookmarks')
+router.route('/api/bookmarks')
   .get((req, res, next) => {
     const knex = req.app.get('db');
     bookmarkService.getAllBookmarks(knex)

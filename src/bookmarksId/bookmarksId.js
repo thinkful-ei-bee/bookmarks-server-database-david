@@ -5,7 +5,7 @@ const router = express.Router();
 const logger = require('../logger');
 const bookmarkService = require('../bookmarks/bookmarkService');
 
-router.route('/bookmarks/:id')
+router.route('/api/bookmarks/:id')
   .get((req, res) => {
     const knex = req.app.get('db');
     const { id } = req.params;
