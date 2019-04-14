@@ -36,6 +36,10 @@ router.route('/api/bookmarks')
         });
       })
       .catch(next);
+  })
+  .patch((req, res) => {
+    logger.error('patch request made without id');
+    return res.status(400).send('patch request requires an id in url');
   });
 
 module.exports = router;
